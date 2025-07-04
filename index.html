@@ -376,3 +376,311 @@
             
             <div class="dashboard-stats">
                 <div class="stat-card">
+                    <div class="stat-number">25</div>
+                    <div>Community Posts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div>Shop Products</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">£47</div>
+                    <div>Earnings This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div>Business Connections</div>
+                </div>
+            </div>
+            
+            <div class="cards">
+                <div class="card">
+                    <h3>💬 Recent Activity</h3>
+                    <p>Your latest posts and interactions across the platform</p>
+                    <button class="btn" onclick="showPage('community')">View Activity</button>
+                </div>
+                <div class="card">
+                    <h3>💰 Earning Opportunities</h3>
+                    <p>Discover new ways to monetize your presence on the platform</p>
+                    <button class="btn" onclick="showPage('shop')">Explore Earnings</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Community Page -->
+        <div id="community" class="page">
+            <h2>🏘️ Community Discussions</h2>
+            
+            <div class="search-section">
+                <input type="text" placeholder="Search discussions..." id="communitySearch">
+                <select id="communityCategory">
+                    <option value="">All Categories</option>
+                    <option value="general">General Discussion</option>
+                    <option value="business">Business & Entrepreneurship</option>
+                    <option value="health">Health & Wellness</option>
+                    <option value="technology">Technology</option>
+                </select>
+            </div>
+            
+            <div class="community-post">
+                <h4>🚀 Welcome to Our Community!</h4>
+                <p>Share your thoughts, connect with others, and build meaningful relationships. This is your space to discuss anything that matters to you.</p>
+                <small>Posted by Admin • 2 hours ago</small>
+            </div>
+            
+            <div class="community-post">
+                <h4>💼 Business Networking Tips</h4>
+                <p>Looking for advice on growing your network? Let's share strategies that have worked for building professional relationships.</p>
+                <small>Posted by Sarah Johnson • 4 hours ago</small>
+            </div>
+            
+            <div class="community-post">
+                <h4>🌍 Local Business Recommendations</h4>
+                <p>What are some great local businesses in your area? Share your favorites and help others discover amazing services.</p>
+                <small>Posted by Mike Chen • 6 hours ago</small>
+            </div>
+        </div>
+        
+        <!-- Business Page -->
+        <div id="business" class="page">
+            <h2>🏢 Business Directory</h2>
+            
+            <div class="search-section">
+                <input type="text" placeholder="Search businesses..." id="businessSearch">
+                <select id="businessLocation">
+                    <option value="">All Locations</option>
+                    <option value="london">London</option>
+                    <option value="manchester">Manchester</option>
+                    <option value="birmingham">Birmingham</option>
+                    <option value="glasgow">Glasgow</option>
+                </select>
+                <select id="businessCategory">
+                    <option value="">All Categories</option>
+                    <option value="restaurant">Restaurants</option>
+                    <option value="retail">Retail</option>
+                    <option value="services">Services</option>
+                    <option value="healthcare">Healthcare</option>
+                </select>
+            </div>
+            
+            <div class="business-card">
+                <h4>🍕 Tony's Pizza Palace</h4>
+                <p><strong>Location:</strong> Manchester City Centre</p>
+                <p><strong>Category:</strong> Restaurant</p>
+                <p>Authentic Italian pizza made with fresh ingredients. Family-owned for over 20 years.</p>
+                <p><strong>Contact:</strong> 0161 123 4567</p>
+            </div>
+            
+            <div class="business-card">
+                <h4>🔧 Quick Fix Repairs</h4>
+                <p><strong>Location:</strong> Birmingham</p>
+                <p><strong>Category:</strong> Services</p>
+                <p>Professional repair services for electronics, appliances, and more. Same-day service available.</p>
+                <p><strong>Contact:</strong> 0121 987 6543</p>
+            </div>
+            
+            <div class="business-card">
+                <h4>🌿 Green Thumb Garden Centre</h4>
+                <p><strong>Location:</strong> London</p>
+                <p><strong>Category:</strong> Retail</p>
+                <p>Everything you need for your garden. Plants, tools, and expert advice.</p>
+                <p><strong>Contact:</strong> 020 7123 4567</p>
+            </div>
+        </div>
+        
+        <!-- Shop Page -->
+        <div id="shop" class="page">
+            <h2>🛍️ Personal Affiliate Shop</h2>
+            
+            <div class="cards">
+                <div class="card">
+                    <h3>💰 Start Earning Today</h3>
+                    <p>Create your personal affiliate shop and start earning commissions. We provide everything you need!</p>
+                    <ul style="text-align: left; margin: 1rem 0;">
+                        <li>£1 per affiliate link (first 20 products)</li>
+                        <li>£2/month for additional products</li>
+                        <li>Complete setup assistance</li>
+                        <li>Ready-made customer base</li>
+                    </ul>
+                    <button class="btn">Create My Shop</button>
+                </div>
+                <div class="card">
+                    <h3>📊 Manage Products</h3>
+                    <p>Add products from Amazon, eBay, or other affiliate programs. Track your earnings and optimize your shop.</p>
+                    <button class="btn">Manage Products</button>
+                </div>
+                <div class="card">
+                    <h3>📈 View Analytics</h3>
+                    <p>See how your shop is performing with detailed analytics and earnings reports.</p>
+                    <button class="btn">View Analytics</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Page -->
+        <div id="profile" class="page">
+            <h2>👤 Your Profile</h2>
+            
+            <div class="cards">
+                <div class="card">
+                    <h3>📝 Edit Profile</h3>
+                    <p>Update your profile information, avatar, and preferences.</p>
+                    <button class="btn">Edit Profile</button>
+                </div>
+                <div class="card">
+                    <h3>🔒 Privacy Settings</h3>
+                    <p>Manage your privacy settings and control who can see your information.</p>
+                    <button class="btn">Privacy Settings</button>
+                </div>
+                <div class="card">
+                    <h3>💬 My Posts</h3>
+                    <p>View and manage all your posts and interactions across the platform.</p>
+                    <button class="btn">View Posts</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase configuration
+        const supabaseUrl = 'https://zuzriniobopqhgsfq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1enJpbmlvYm9wcWhmc2ZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU2Nzc5OTgsImV4cCI6MjA1MTI1Mzk5OH0.Z5LHNJfB-DjYWBqBglXWYzjlMFsRVVGEcjkxcYvmGIo';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let currentUser = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        async function checkAuth() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                currentUser = user;
+                updateAuthUI();
+            } catch (error) {
+                console.error('Auth check error:', error);
+                updateAuthUI();
+            }
+        }
+
+        function updateAuthUI() {
+            const loggedIn = document.querySelectorAll('.logged-in');
+            const loggedOut = document.querySelectorAll('.logged-out');
+            
+            if (currentUser) {
+                loggedIn.forEach(el => el.style.display = 'block');
+                loggedOut.forEach(el => el.style.display = 'none');
+            } else {
+                loggedIn.forEach(el => el.style.display = 'none');
+                loggedOut.forEach(el => el.style.display = 'block');
+            }
+        }
+
+        async function signUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                showError('Please enter both email and password');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    showError(error.message);
+                } else {
+                    showSuccess('Account created successfully! You can now sign in.');
+                    document.getElementById('email').value = '';
+                    document.getElementById('password').value = '';
+                }
+            } catch (error) {
+                showError('Registration failed: ' + error.message);
+            }
+        }
+
+        async function signIn() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                showError('Please enter both email and password');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    showError(error.message);
+                } else {
+                    currentUser = data.user;
+                    updateAuthUI();
+                    showSuccess('Signed in successfully!');
+                    document.getElementById('email').value = '';
+                    document.getElementById('password').value = '';
+                    showPage('dashboard');
+                }
+            } catch (error) {
+                showError('Sign in failed: ' + error.message);
+            }
+        }
+
+        async function signOut() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) {
+                    showError(error.message);
+                } else {
+                    currentUser = null;
+                    updateAuthUI();
+                    showSuccess('Signed out successfully!');
+                    showPage('home');
+                }
+            } catch (error) {
+                showError('Sign out failed: ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('authError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('authSuccess');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showPage(pageName) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show selected page
+            document.getElementById(pageName).classList.add('active');
+            
+            // Update navigation
+            const navButtons = document.querySelectorAll('.nav-links button');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
