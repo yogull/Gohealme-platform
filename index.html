@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yogull Platform - Community & Business Hub</title>
-    <meta name="description" content="Complete social media platform with business directory, personal shops, and community discussions. Connect with people worldwide and start earning money today.">
-    
+    <title>Yogull Platform - Complete Social Media & Business Solution</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -17,14 +16,13 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: #333;
+            line-height: 1.6;
         }
         
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -34,6 +32,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 1rem 2rem;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -78,8 +77,8 @@
             background: white;
             border-radius: 15px;
             padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            min-height: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
         }
         
         .page.active {
@@ -88,113 +87,119 @@
         
         .hero {
             text-align: center;
-            margin-bottom: 3rem;
-            color: white;
+            padding: 3rem 0;
         }
         
         .hero h1 {
             font-size: 3rem;
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            margin-bottom: 3rem;
+            margin: 3rem 0;
         }
         
         .card {
             background: white;
             padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px solid #f0f0f0;
         }
         
         .card h3 {
-            color: #667eea;
+            color: #333;
             margin-bottom: 1rem;
         }
         
+        .card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 0.8rem 2rem;
             border: none;
-            border-radius: 25px;
+            border-radius: 5px;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
         }
         
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
         .auth-section {
             background: #f8f9fa;
             padding: 2rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .auth-form {
+            max-width: 400px;
+            margin: 0 auto;
         }
         
         .form-group {
             margin-bottom: 1rem;
+            text-align: left;
         }
         
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
+            color: #333;
             font-weight: 500;
         }
         
-        .form-group input, .form-group textarea {
+        .form-group input {
             width: 100%;
             padding: 0.8rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             font-size: 1rem;
         }
         
-        .form-group input:focus, .form-group textarea:focus {
+        .form-group input:focus {
             outline: none;
             border-color: #667eea;
-        }
-        
-        .connection-status {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .connected {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .disconnected {
-            background: #f8d7da;
-            color: #721c24;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
         }
         
         .dashboard-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin: 2rem 0;
         }
         
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 1.5rem;
             border-radius: 10px;
@@ -207,53 +212,6 @@
             margin-bottom: 0.5rem;
         }
         
-        .post-feed {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .post {
-            background: white;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #667eea;
-        }
-        
-        .business-item {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            transition: box-shadow 0.3s;
-        }
-        
-        .business-item:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .shop-product {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .user-info {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        
         .logged-out {
             display: block;
         }
@@ -262,10 +220,75 @@
             display: none;
         }
         
+        .user-info {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        .community-post {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        
+        .business-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .business-card h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .search-section {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .search-section input, .search-section select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
         @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
             .nav-links {
                 flex-wrap: wrap;
-                gap: 0.5rem;
+                gap: 1rem;
             }
             
             .hero h1 {
@@ -274,10 +297,6 @@
             
             .cards {
                 grid-template-columns: 1fr;
-            }
-            
-            .container {
-                padding: 1rem;
             }
         }
     </style>
@@ -300,11 +319,10 @@
     <div class="container">
         <!-- Home Page -->
         <div id="home" class="page active">
-            <section class="hero">
+            <div class="hero">
                 <h1>Welcome to Yogull Platform</h1>
-                <p>The complete social media and business networking platform</p>
-                <div id="connectionStatus" class="connection-status">🔄 Connecting to database...</div>
-            </section>
+                <p>Your complete social media and business solution. Connect with people worldwide, discover local businesses, and create your own affiliate shop to start earning money.</p>
+            </div>
             
             <section class="cards">
                 <div class="card">
@@ -326,23 +344,29 @@
             
             <section class="auth-section logged-out">
                 <h3>👤 Create Account or Sign In</h3>
-                <p>Join thousands of users already building their networks and earning money</p>
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" placeholder="Enter your email address">
+                <div class="auth-form">
+                    <div id="authError" class="error" style="display:none;"></div>
+                    <div id="authSuccess" class="success" style="display:none;"></div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password">
+                    </div>
+                    <button class="btn" onclick="signUp()">Create Account</button>
+                    <button class="btn" onclick="signIn()" style="margin-left: 1rem;">Sign In</button>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password">
-                </div>
-                <button class="btn" onclick="signUp()">Create Account</button>
-                <button class="btn" onclick="signIn()">Sign In</button>
             </section>
             
-            <div class="user-info logged-in">
-                <h3>Welcome back!</h3>
-                <p>You are signed in and ready to use all platform features</p>
-                <button class="btn" onclick="signOut()">Sign Out</button>
+            <div class="auth-section logged-in">
+                <div class="user-info">
+                    <h3>✅ Welcome Back!</h3>
+                    <p>You are signed in and ready to use all platform features</p>
+                    <button class="btn" onclick="signOut()">Sign Out</button>
+                </div>
             </div>
         </div>
         
@@ -352,118 +376,3 @@
             
             <div class="dashboard-stats">
                 <div class="stat-card">
-                    <div class="stat-number">25</div>
-                    <div>Community Posts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">£124</div>
-                    <div>Earnings This Month</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">8</div>
-                    <div>Business Connections</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">156</div>
-                    <div>Profile Views</div>
-                </div>
-            </div>
-            
-            <h3>Recent Activity</h3>
-            <div class="post-feed">
-                <div class="post">
-                    <strong>Sarah Johnson</strong> commented on your business listing
-                    <br><small>2 hours ago</small>
-                </div>
-                <div class="post">
-                    <strong>Mike Chen</strong> purchased from your affiliate shop
-                    <br><small>5 hours ago</small>
-                </div>
-                <div class="post">
-                    <strong>Emma Wilson</strong> joined your community discussion
-                    <br><small>1 day ago</small>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Community Page -->
-        <div id="community" class="page">
-            <h2>🏘️ Community Discussions</h2>
-            
-            <div class="form-group">
-                <label for="newPost">Start a new discussion</label>
-                <textarea id="newPost" placeholder="What's on your mind? Share with the community..." rows="3"></textarea>
-                <button class="btn" onclick="createPost()">Post to Community</button>
-            </div>
-            
-            <h3>Recent Discussions</h3>
-            <div class="post-feed">
-                <div class="post">
-                    <strong>Health & Wellness Tips</strong>
-                    <p>Share your best health tips and wellness routines with the community.</p>
-                    <small>Started by Dr. Amanda Lee • 15 replies</small>
-                </div>
-                <div class="post">
-                    <strong>Local Business Recommendations</strong>
-                    <p>What are your favorite local businesses? Help others discover great services.</p>
-                    <small>Started by John Smith • 23 replies</small>
-                </div>
-                <div class="post">
-                    <strong>Affiliate Marketing Success Stories</strong>
-                    <p>Share your success stories and tips for building profitable affiliate shops.</p>
-                    <small>Started by Lisa Garcia • 31 replies</small>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Business Page -->
-        <div id="business" class="page">
-            <h2>🏢 Business Directory</h2>
-            
-            <div class="form-group">
-                <label for="businessSearch">Search businesses</label>
-                <input type="text" id="businessSearch" placeholder="Search by name, category, or location...">
-                <button class="btn" onclick="searchBusinesses()">Search</button>
-            </div>
-            
-            <h3>Featured Businesses</h3>
-            <div class="business-item">
-                <h4>Nottingham Health Centre</h4>
-                <p>Comprehensive healthcare services including general practice, specialists, and wellness programs.</p>
-                <p><strong>Location:</strong> Nottingham, UK • <strong>Category:</strong> Healthcare</p>
-                <button class="btn">Contact Business</button>
-            </div>
-            <div class="business-item">
-                <h4>Manchester Fitness Hub</h4>
-                <p>State-of-the-art gym facilities with personal training and group fitness classes.</p>
-                <p><strong>Location:</strong> Manchester, UK • <strong>Category:</strong> Fitness</p>
-                <button class="btn">Contact Business</button>
-            </div>
-            <div class="business-item">
-                <h4>London Tech Solutions</h4>
-                <p>IT support and technology solutions for businesses of all sizes.</p>
-                <p><strong>Location:</strong> London, UK • <strong>Category:</strong> Technology</p>
-                <button class="btn">Contact Business</button>
-            </div>
-        </div>
-        
-        <!-- Shop Page -->
-        <div id="shop" class="page">
-            <h2>🛍️ Personal Affiliate Shop</h2>
-            
-            <div class="user-info">
-                <h3>💰 Start Earning Money Today</h3>
-                <p>Create your personal affiliate shop and earn commissions on every sale</p>
-            </div>
-            
-            <div class="form-group">
-                <label for="productName">Add New Product</label>
-                <input type="text" id="productName" placeholder="Product name">
-            </div>
-            <div class="form-group">
-                <label for="productLink">Affiliate Link</label>
-                <input type="url" id="productLink" placeholder="https://affiliate-link.com">
-            </div>
-            <div class="form-group">
-                <label for="productPrice">Price</label>
-                <input type
