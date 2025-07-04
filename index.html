@@ -5,18 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yogull Platform - Community & Business Hub</title>
     <meta name="description" content="Complete social media platform with business directory, personal shops, and community discussions. Connect with people worldwide and start earning money today.">
-    <meta name="keywords" content="yogull, social media, business directory, personal shops, community, affiliate, earnings">
-    
-    <!-- Open Graph for social sharing -->
-    <meta property="og:title" content="Yogull Platform - Community & Business Hub">
-    <meta property="og:description" content="Join the complete social platform with business networking and earning opportunities">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://yogull.github.io/gohealme-platform-v2">
-    
-    <!-- Mobile optimization -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="mobile-web-app-capable" content="yes">
     
     <style>
         * {
@@ -63,21 +51,39 @@
             align-items: center;
         }
         
-        .nav-links a {
+        .nav-links button {
+            background: none;
+            border: none;
             color: #333;
-            text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s;
         }
         
-        .nav-links a:hover {
-            color: #667eea;
+        .nav-links button:hover, .nav-links button.active {
+            background: #667eea;
+            color: white;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
+        }
+        
+        .page {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+        
+        .page.active {
+            display: block;
         }
         
         .hero {
@@ -92,12 +98,6 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-        
         .cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -110,24 +110,16 @@
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s;
         }
         
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
         }
         
         .card h3 {
             color: #667eea;
             margin-bottom: 1rem;
-            font-size: 1.3rem;
-        }
-        
-        .card p {
-            margin-bottom: 1.5rem;
-            color: #666;
-            line-height: 1.6;
         }
         
         .btn {
@@ -139,8 +131,6 @@
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
         }
         
         .btn:hover {
@@ -149,11 +139,10 @@
         }
         
         .auth-section {
-            background: white;
+            background: #f8f9fa;
             padding: 2rem;
             border-radius: 15px;
             margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         
         .form-group {
@@ -163,20 +152,18 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #333;
             font-weight: 500;
         }
         
-        .form-group input {
+        .form-group input, .form-group textarea {
             width: 100%;
             padding: 0.8rem;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 1rem;
-            transition: border-color 0.3s;
         }
         
-        .form-group input:focus {
+        .form-group input:focus, .form-group textarea:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -192,52 +179,97 @@
         .connected {
             background: #d4edda;
             color: #155724;
-            border: 1px solid #c3e6cb;
         }
         
         .disconnected {
             background: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
         }
         
-        .footer {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 2rem;
-            margin-top: 3rem;
-            text-align: center;
-            color: #666;
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
         
-        .business-value {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2rem;
-            border-radius: 15px;
-            margin: 2rem 0;
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
             text-align: center;
         }
         
-        .business-value h2 {
-            color: #667eea;
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .post-feed {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
             margin-bottom: 1rem;
         }
         
-        .revenue-highlight {
+        .post {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        
+        .business-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: box-shadow 0.3s;
+        }
+        
+        .business-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .shop-product {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
             padding: 1rem;
             border-radius: 10px;
-            margin: 1rem 0;
-            font-weight: bold;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .logged-out {
+            display: block;
+        }
+        
+        .logged-in {
+            display: none;
         }
         
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 0.5rem;
             }
             
-            .nav-links {
-                display: none;
+            .hero h1 {
+                font-size: 2rem;
             }
             
             .cards {
@@ -255,200 +287,183 @@
         <nav class="nav">
             <a href="#" class="logo">🌟 Yogull Platform</a>
             <div class="nav-links">
-                <a href="#community">Community</a>
-                <a href="#business">Business</a>
-                <a href="#shops">Shops</a>
-                <a href="#about">About</a>
+                <button onclick="showPage('home')" class="active">Home</button>
+                <button onclick="showPage('dashboard')">Dashboard</button>
+                <button onclick="showPage('community')">Community</button>
+                <button onclick="showPage('business')">Business</button>
+                <button onclick="showPage('shop')">Shop</button>
+                <button onclick="showPage('profile')">Profile</button>
             </div>
         </nav>
     </header>
     
     <div class="container">
-        <section class="hero">
-            <h1>Welcome to Yogull Platform</h1>
-            <p>The complete social media and business networking platform</p>
-            <div id="connectionStatus" class="connection-status">🔄 Connecting to database...</div>
-        </section>
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <section class="hero">
+                <h1>Welcome to Yogull Platform</h1>
+                <p>The complete social media and business networking platform</p>
+                <div id="connectionStatus" class="connection-status">🔄 Connecting to database...</div>
+            </section>
+            
+            <section class="cards">
+                <div class="card">
+                    <h3>🏘️ Community Hub</h3>
+                    <p>Join discussions and connect with people worldwide. Share ideas, get support, and build meaningful relationships.</p>
+                    <button class="btn" onclick="showPage('community')">Join Community</button>
+                </div>
+                <div class="card">
+                    <h3>🏢 Business Directory</h3>
+                    <p>Find local businesses and services in your area. Connect with business owners and discover opportunities.</p>
+                    <button class="btn" onclick="showPage('business')">Browse Businesses</button>
+                </div>
+                <div class="card">
+                    <h3>🛍️ Personal Shops</h3>
+                    <p>Create your own affiliate shop and start earning money. We provide everything you need to succeed.</p>
+                    <button class="btn" onclick="showPage('shop')">Start Earning</button>
+                </div>
+            </section>
+            
+            <section class="auth-section logged-out">
+                <h3>👤 Create Account or Sign In</h3>
+                <p>Join thousands of users already building their networks and earning money</p>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email address">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password">
+                </div>
+                <button class="btn" onclick="signUp()">Create Account</button>
+                <button class="btn" onclick="signIn()">Sign In</button>
+            </section>
+            
+            <div class="user-info logged-in">
+                <h3>Welcome back!</h3>
+                <p>You are signed in and ready to use all platform features</p>
+                <button class="btn" onclick="signOut()">Sign Out</button>
+            </div>
+        </div>
         
-        <section class="business-value">
-            <h2>🚀 Revenue-Ready Platform</h2>
-            <div class="revenue-highlight">
-                Potential Annual Revenue: £5,784 from 241 businesses
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page">
+            <h2>📊 Your Dashboard</h2>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-number">25</div>
+                    <div>Community Posts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">£124</div>
+                    <div>Earnings This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div>Business Connections</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">156</div>
+                    <div>Profile Views</div>
+                </div>
             </div>
-            <p>Complete business ecosystem with affiliate shops, local directory, and community engagement</p>
-        </section>
+            
+            <h3>Recent Activity</h3>
+            <div class="post-feed">
+                <div class="post">
+                    <strong>Sarah Johnson</strong> commented on your business listing
+                    <br><small>2 hours ago</small>
+                </div>
+                <div class="post">
+                    <strong>Mike Chen</strong> purchased from your affiliate shop
+                    <br><small>5 hours ago</small>
+                </div>
+                <div class="post">
+                    <strong>Emma Wilson</strong> joined your community discussion
+                    <br><small>1 day ago</small>
+                </div>
+            </div>
+        </div>
         
-        <section class="cards" id="features">
-            <div class="card">
-                <h3>🏘️ Community Hub</h3>
-                <p>Join discussions and connect with people worldwide. Share ideas, get support, and build meaningful relationships in our vibrant community.</p>
-                <button class="btn" onclick="showCommunity()">Join Community</button>
-            </div>
-            <div class="card">
-                <h3>🏢 Business Directory</h3>
-                <p>Find local businesses and services in your area. Connect with business owners and discover new opportunities in your community.</p>
-                <button class="btn" onclick="showBusiness()">Browse Businesses</button>
-            </div>
-            <div class="card">
-                <h3>🛍️ Personal Shops</h3>
-                <p>Create your own affiliate shop and start earning money. We provide everything you need to build a successful online business.</p>
-                <button class="btn" onclick="showShop()">Start Earning</button>
-            </div>
-            <div class="card">
-                <h3>💬 Chat & Connect</h3>
-                <p>Real-time messaging with community members. Build professional networks and personal connections.</p>
-                <button class="btn" onclick="showChat()">Start Chatting</button>
-            </div>
-            <div class="card">
-                <h3>📊 Analytics</h3>
-                <p>Track your business performance, community engagement, and earnings with detailed analytics and insights.</p>
-                <button class="btn" onclick="showAnalytics()">View Analytics</button>
-            </div>
-            <div class="card">
-                <h3>🎯 Local Targeting</h3>
-                <p>Connect with businesses and people in your specific area. Location-based discovery and networking.</p>
-                <button class="btn" onclick="showLocal()">Find Local</button>
-            </div>
-        </section>
-        
-        <section class="auth-section" id="auth">
-            <h3>👤 Create Account or Sign In</h3>
-            <p>Join thousands of users already building their networks and earning money on Yogull Platform</p>
+        <!-- Community Page -->
+        <div id="community" class="page">
+            <h2>🏘️ Community Discussions</h2>
+            
             <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" placeholder="Enter your email address">
+                <label for="newPost">Start a new discussion</label>
+                <textarea id="newPost" placeholder="What's on your mind? Share with the community..." rows="3"></textarea>
+                <button class="btn" onclick="createPost()">Post to Community</button>
+            </div>
+            
+            <h3>Recent Discussions</h3>
+            <div class="post-feed">
+                <div class="post">
+                    <strong>Health & Wellness Tips</strong>
+                    <p>Share your best health tips and wellness routines with the community.</p>
+                    <small>Started by Dr. Amanda Lee • 15 replies</small>
+                </div>
+                <div class="post">
+                    <strong>Local Business Recommendations</strong>
+                    <p>What are your favorite local businesses? Help others discover great services.</p>
+                    <small>Started by John Smith • 23 replies</small>
+                </div>
+                <div class="post">
+                    <strong>Affiliate Marketing Success Stories</strong>
+                    <p>Share your success stories and tips for building profitable affiliate shops.</p>
+                    <small>Started by Lisa Garcia • 31 replies</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Business Page -->
+        <div id="business" class="page">
+            <h2>🏢 Business Directory</h2>
+            
+            <div class="form-group">
+                <label for="businessSearch">Search businesses</label>
+                <input type="text" id="businessSearch" placeholder="Search by name, category, or location...">
+                <button class="btn" onclick="searchBusinesses()">Search</button>
+            </div>
+            
+            <h3>Featured Businesses</h3>
+            <div class="business-item">
+                <h4>Nottingham Health Centre</h4>
+                <p>Comprehensive healthcare services including general practice, specialists, and wellness programs.</p>
+                <p><strong>Location:</strong> Nottingham, UK • <strong>Category:</strong> Healthcare</p>
+                <button class="btn">Contact Business</button>
+            </div>
+            <div class="business-item">
+                <h4>Manchester Fitness Hub</h4>
+                <p>State-of-the-art gym facilities with personal training and group fitness classes.</p>
+                <p><strong>Location:</strong> Manchester, UK • <strong>Category:</strong> Fitness</p>
+                <button class="btn">Contact Business</button>
+            </div>
+            <div class="business-item">
+                <h4>London Tech Solutions</h4>
+                <p>IT support and technology solutions for businesses of all sizes.</p>
+                <p><strong>Location:</strong> London, UK • <strong>Category:</strong> Technology</p>
+                <button class="btn">Contact Business</button>
+            </div>
+        </div>
+        
+        <!-- Shop Page -->
+        <div id="shop" class="page">
+            <h2>🛍️ Personal Affiliate Shop</h2>
+            
+            <div class="user-info">
+                <h3>💰 Start Earning Money Today</h3>
+                <p>Create your personal affiliate shop and earn commissions on every sale</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="productName">Add New Product</label>
+                <input type="text" id="productName" placeholder="Product name">
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter your password">
+                <label for="productLink">Affiliate Link</label>
+                <input type="url" id="productLink" placeholder="https://affiliate-link.com">
             </div>
-            <button class="btn" onclick="signUp()">Create Account</button>
-            <button class="btn" onclick="signIn()">Sign In</button>
-        </section>
-    </div>
-    
-    <footer class="footer">
-        <p>&copy; 2024 Yogull Platform. Built for community, designed for success.</p>
-        <p>Professional social media platform with business networking and earning opportunities</p>
-    </footer>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Initialize Supabase
-        const supabase = window.supabase.createClient(
-            'https://zuzriniobopqhgsfq.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1enJpbmlvYm9wcWhnc2ZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE2NDk2NzcsImV4cCI6MjA2NzIyNTY3N30.jYqZkSpT2sdsWMed-k5LvJUl2-D6bMoJEMFNmOsWwF4'
-        );
-        
-        // Test database connection
-        async function testConnection() {
-            try {
-                const { data, error } = await supabase.from('users').select('count', { count: 'exact' });
-                if (error) throw error;
-                
-                document.getElementById('connectionStatus').textContent = '🟢 Connected to live database';
-                document.getElementById('connectionStatus').className = 'connection-status connected';
-                console.log('Database connection successful');
-            } catch (error) {
-                document.getElementById('connectionStatus').textContent = '❌ Database connection failed';
-                document.getElementById('connectionStatus').className = 'connection-status disconnected';
-                console.error('Database connection error:', error);
-            }
-        }
-        
-        // User registration
-        async function signUp() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            if (!email || !password) {
-                alert('Please enter both email and password');
-                return;
-            }
-            
-            if (password.length < 6) {
-                alert('Password must be at least 6 characters long');
-                return;
-            }
-            
-            try {
-                const { data, error } = await supabase.auth.signUp({
-                    email: email,
-                    password: password
-                });
-                
-                if (error) throw error;
-                
-                alert('Account created successfully! Check your email for verification.');
-                
-                // Clear form
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
-                
-            } catch (error) {
-                alert('Error creating account: ' + error.message);
-            }
-        }
-        
-        // User login
-        async function signIn() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            if (!email || !password) {
-                alert('Please enter both email and password');
-                return;
-            }
-            
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-                
-                if (error) throw error;
-                
-                alert('Signed in successfully! Welcome to Yogull Platform.');
-                
-                // Clear form
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
-                
-            } catch (error) {
-                alert('Error signing in: ' + error.message);
-            }
-        }
-        
-        // Feature functions
-        function showCommunity() {
-            alert('🏘️ Community Hub\n\nConnect with people worldwide, join discussions, and build meaningful relationships. Share your ideas and get support from our vibrant community.');
-        }
-        
-        function showBusiness() {
-            alert('🏢 Business Directory\n\nDiscover local businesses and services in your area. Connect with business owners and find new opportunities in your community.');
-        }
-        
-        function showShop() {
-            alert('🛍️ Personal Shops\n\nStart earning money with your own affiliate shop. We provide everything you need to build a successful online business with zero startup costs.');
-        }
-        
-        function showChat() {
-            alert('💬 Chat & Connect\n\nReal-time messaging with community members. Build professional networks and personal connections through our secure chat system.');
-        }
-        
-        function showAnalytics() {
-            alert('📊 Analytics Dashboard\n\nTrack your business performance, community engagement, and earnings with detailed analytics and insights.');
-        }
-        
-        function showLocal() {
-            alert('🎯 Local Targeting\n\nConnect with businesses and people in your specific area. Location-based discovery and networking for maximum local impact.');
-        }
-        
-        // Initialize on page load
-        window.addEventListener('load', function() {
-            testConnection();
-            console.log('Yogull Platform initialized successfully');
-        });
-    </script>
-</body>
-</html>
+            <div class="form-group">
+                <label for="productPrice">Price</label>
+                <input type
