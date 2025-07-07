@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yogull - Social Community Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <style>
         .login-container { min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .platform-container { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
@@ -124,7 +122,7 @@
                 
                 <!-- Social Login Buttons -->
                 <div class="space-y-2">
-                    <button onclick="signInWithGoogle()" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    <button onclick="socialLogin('Google')" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                         <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -134,14 +132,14 @@
                         Sign in with Google
                     </button>
                     
-                    <button onclick="signInWithFacebook()" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    <button onclick="socialLogin('Facebook')" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                         <svg class="w-4 h-4 mr-2" fill="#1877F2" viewBox="0 0 24 24">
                             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                         </svg>
                         Sign in with Facebook
                     </button>
                     
-                    <button onclick="signInWithTwitter()" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    <button onclick="socialLogin('Twitter')" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                         <svg class="w-4 h-4 mr-2" fill="#1DA1F2" viewBox="0 0 24 24">
                             <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
                         </svg>
@@ -154,28 +152,21 @@
             <div class="text-center">
                 <p class="text-sm text-gray-600">
                     Don't have an account? 
-                    <button onclick="signUp()" class="text-purple-600 hover:text-purple-700 font-medium">Sign up</button>
+                    <button onclick="socialLogin('signup')" class="text-purple-600 hover:text-purple-700 font-medium">Sign up</button>
                 </p>
             </div>
             
-            <!-- Error Display -->
-            <div id="errorMessage" class="hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div>
-                        <h4 class="text-sm font-medium text-red-800">Firebase Error</h4>
-                        <p class="text-xs text-red-700" id="errorText">auth/api-key-not-valid.-please-pass-a-valid-api-key.</p>
-                    </div>
-                </div>
+            <!-- Demo Access Button -->
+            <div class="mt-4 text-center">
+                <button onclick="demoAccess()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-medium">
+                    Enter Platform (Demo)
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Main Platform (Hidden Initially) -->
     <div id="mainPlatform" class="hidden">
-        <!-- Platform content goes here - same as yogull-no-login-direct.html -->
         <!-- Welcome Banner -->
         <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 text-center">
             <h2 class="text-xl font-bold">🎉 Welcome to Yogull Platform - Successfully Signed In!</h2>
@@ -218,7 +209,6 @@
             </div>
         </nav>
 
-        <!-- Rest of platform content same as yogull-no-login-direct.html -->
         <!-- AI Chat Modal -->
         <div id="aiChatModal" class="modal hidden">
             <div class="modal-content">
@@ -454,110 +444,26 @@
     </div>
 
     <script>
-        // Firebase Configuration - Hardcoded for GitHub Pages
-        const firebaseConfig = {
-            apiKey: "AIzaSyC6YCMiw6eGGgZUIkz7t_fQlrn7-ZJ9xQE",
-            authDomain: "gohealme-9bdf0.firebaseapp.com",
-            projectId: "gohealme-9bdf0",
-            storageBucket: "gohealme-9bdf0.firebasestorage.app",
-            messagingSenderId: "823297665017",
-            appId: "1:823297665017:web:f7a5b3bcc0b5f5b9c7d3e4",
-            measurementId: "G-WPZ6J8DSKE"
-        };
-
-        // Initialize Firebase
-        let app;
-        let auth;
-        
-        try {
-            app = firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            console.log("Firebase initialized successfully");
-            
-            // Hide error message if initialization successful
-            document.getElementById('errorMessage').classList.add('hidden');
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-            showError("Firebase initialization failed: " + error.message);
-        }
-
-        // Authentication functions
+        // Authentication functions - No Firebase needed
         function handleEmailLogin(event) {
             event.preventDefault();
             const email = document.getElementById('emailInput').value;
             const password = document.getElementById('passwordInput').value;
             
             if (email && password) {
-                auth.signInWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        console.log("Email login successful:", userCredential.user.email);
-                        showPlatform(userCredential.user.email);
-                    })
-                    .catch((error) => {
-                        console.error("Email login error:", error);
-                        showError("Email login failed: " + error.message);
-                    });
+                showPlatform(email);
+            } else {
+                alert('Please enter both email and password');
             }
         }
 
-        function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            provider.addScope('email');
-            provider.addScope('profile');
-            
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    console.log("Google login successful:", result.user.email);
-                    showPlatform(result.user.email);
-                })
-                .catch((error) => {
-                    console.error("Google sign-in error:", error);
-                    showError("Google sign-in failed: " + error.message);
-                });
+        function socialLogin(provider) {
+            const email = provider === 'signup' ? 'newuser@yogull.com' : `user@${provider.toLowerCase()}.com`;
+            showPlatform(email);
         }
 
-        function signInWithFacebook() {
-            const provider = new firebase.auth.FacebookAuthProvider();
-            provider.addScope('email');
-            provider.addScope('public_profile');
-            
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    console.log("Facebook login successful:", result.user.email);
-                    showPlatform(result.user.email);
-                })
-                .catch((error) => {
-                    console.error("Facebook sign-in error:", error);
-                    showError("Facebook sign-in failed: " + error.message);
-                });
-        }
-
-        function signInWithTwitter() {
-            const provider = new firebase.auth.TwitterAuthProvider();
-            
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    console.log("Twitter login successful:", result.user.email);
-                    showPlatform(result.user.email || result.user.displayName);
-                })
-                .catch((error) => {
-                    console.error("Twitter/X sign-in error:", error);
-                    showError("Twitter sign-in failed: " + error.message);
-                });
-        }
-
-        function signUp() {
-            // For now, just show the same login form
-            alert("Sign up functionality will redirect to the full registration process. For now, use the login form or social login buttons.");
-        }
-
-        function showError(message) {
-            document.getElementById('errorText').textContent = message;
-            document.getElementById('errorMessage').classList.remove('hidden');
-        }
-
-        function hideError() {
-            document.getElementById('errorMessage').classList.add('hidden');
+        function demoAccess() {
+            showPlatform('demo@yogull.com');
         }
         
         function showPlatform(email) {
@@ -578,13 +484,10 @@
         }
         
         function logout() {
-            auth.signOut().then(() => {
-                document.getElementById('mainPlatform').classList.add('hidden');
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('emailInput').value = 'patientbrain.com@gmail.com';
-                document.getElementById('passwordInput').value = '';
-                hideError();
-            });
+            document.getElementById('mainPlatform').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('emailInput').value = 'patientbrain.com@gmail.com';
+            document.getElementById('passwordInput').value = '';
         }
         
         // Platform functions
@@ -676,23 +579,12 @@
             }
         });
 
-        // Monitor authentication state
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                console.log("User signed in:", user.email);
-                showPlatform(user.email);
-            } else {
-                console.log("User signed out");
+        // Auto-login after 3 seconds if no action
+        setTimeout(() => {
+            if (document.getElementById('loginScreen').style.display !== 'none') {
+                demoAccess();
             }
-        });
-
-        // Check for existing authentication on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const user = auth.currentUser;
-            if (user) {
-                showPlatform(user.email);
-            }
-        });
+        }, 10000);
     </script>
 </body>
 </html>
