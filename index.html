@@ -3,481 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yogull Platform - Complete Social Media & Business Solution</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <title>Yogull - Social Community Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
         
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxHlbxOi8qJg8LjrglHZgxZ7qliqg-njI",
+            authDomain: "gohealme-9bdf0.firebaseapp.com",
+            projectId: "gohealme-9bdf0",
+            storageBucket: "gohealme-9bdf0.firebasestorage.app",
+            messagingSenderId: "823297665017",
+            appId: "1:823297665017:web:3427ba4397e12447ccbf28"
+        };
         
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
         
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #667eea;
-            text-decoration: none;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-        
-        .nav-links button {
-            background: none;
-            border: none;
-            color: #333;
-            font-weight: 500;
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-        
-        .nav-links button:hover, .nav-links button.active {
-            background: #667eea;
-            color: white;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        
-        .page {
-            display: none;
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
-        .hero {
-            text-align: center;
-            padding: 3rem 0;
-        }
-        
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .hero p {
-            font-size: 1.2rem;
-            color: #666;
-            margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-        
-        .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            border: 1px solid #f0f0f0;
-        }
-        
-        .card h3 {
-            color: #333;
-            margin-bottom: 1rem;
-        }
-        
-        .card p {
-            color: #666;
-            margin-bottom: 1.5rem;
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 0.8rem 2rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .auth-section {
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 10px;
-            margin: 2rem 0;
-            text-align: center;
-        }
-        
-        .auth-form {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #333;
-            font-weight: 500;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
-        }
-        
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-        
-        .logged-out {
-            display: block;
-        }
-        
-        .logged-in {
-            display: none;
-        }
-        
-        .user-info {
-            background: #e8f5e8;
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
-        
-        .success {
-            color: #155724;
-            background: #d4edda;
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            display: none;
-        }
-        
-        .community-post {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #667eea;
-        }
-        
-        .business-card {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .business-card h4 {
-            color: #667eea;
-            margin-bottom: 0.5rem;
-        }
-        
-        .search-section {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-        }
-        
-        .search-section input, .search-section select {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
-        
-        @media (max-width: 768px) {
-            .nav {
-                flex-direction: column;
-                gap: 1rem;
+        window.signIn = async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = result.user.displayName;
+                document.getElementById('userPhoto').src = result.user.photoURL;
+            } catch (error) {
+                console.error('Sign in error:', error);
             }
-            
-            .nav-links {
-                flex-wrap: wrap;
-                gap: 1rem;
-            }
-            
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .cards {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+        };
+    </script>
 </head>
-<body>
-    <header class="header">
-        <nav class="nav">
-            <a href="#" class="logo">🌟 Yogull Platform</a>
-            <div class="nav-links">
-                <button onclick="showPage('home')" class="active">Home</button>
-                <button onclick="showPage('dashboard')">Dashboard</button>
-                <button onclick="showPage('community')">Community</button>
-                <button onclick="showPage('business')">Business</button>
-                <button onclick="showPage('shop')">Shop</button>
-                <button onclick="showPage('profile')">Profile</button>
-            </div>
-        </nav>
+<body class="min-h-screen bg-white">
+    <header class="bg-blue-600 text-white p-4">
+        <h1 class="text-2xl font-bold">Yogull - Social Community Platform</h1>
     </header>
     
-    <div class="container">
-        <!-- Home Page -->
-        <div id="home" class="page active">
-            <div class="hero">
-                <h1>Welcome to Yogull Platform</h1>
-                <p>Your complete social media and business solution. Connect with people worldwide, discover local businesses, and create your own affiliate shop to start earning money.</p>
-            </div>
+    <main class="container mx-auto p-4">
+        <div id="loginSection" class="text-center py-20">
+            <h2 class="text-3xl mb-8">Welcome to Yogull</h2>
+            <p class="text-lg mb-8">Your social media community platform is successfully deployed!</p>
+            <button onclick="signIn()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                Sign In with Google
+            </button>
+        </div>
+        
+        <div id="userSection" class="text-center py-20" style="display: none;">
+            <h2 class="text-3xl mb-4">Welcome, <span id="userName"></span>!</h2>
+            <img id="userPhoto" class="w-20 h-20 rounded-full mx-auto mb-4" />
+            <p class="text-lg mb-8">Your Yogull platform is live and working!</p>
             
-            <section class="cards">
-                <div class="card">
-                    <h3>🏘️ Community Hub</h3>
-                    <p>Join discussions and connect with people worldwide. Share ideas, get support, and build meaningful relationships.</p>
-                    <button class="btn" onclick="showPage('community')">Join Community</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="bg-gray-100 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">Dashboard</h3>
+                    <p>Your personal overview</p>
                 </div>
-                <div class="card">
-                    <h3>🏢 Business Directory</h3>
-                    <p>Find local businesses and services in your area. Connect with business owners and discover opportunities.</p>
-                    <button class="btn" onclick="showPage('business')">Browse Businesses</button>
+                <div class="bg-gray-100 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">Community</h3>
+                    <p>Connect with others</p>
                 </div>
-                <div class="card">
-                    <h3>🛍️ Personal Shops</h3>
-                    <p>Create your own affiliate shop and start earning money. We provide everything you need to succeed.</p>
-                    <button class="btn" onclick="showPage('shop')">Start Earning</button>
-                </div>
-            </section>
-            
-            <section class="auth-section logged-out">
-                <h3>👤 Create Account or Sign In</h3>
-                <div class="auth-form">
-                    <div id="authSuccess" class="success"></div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" placeholder="Enter your email">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" placeholder="Enter your password">
-                    </div>
-                    <button class="btn" onclick="createAccount()">Create Account</button>
-                    <button class="btn" onclick="signIn()" style="margin-left: 1rem;">Sign In</button>
-                </div>
-            </section>
-            
-            <div class="auth-section logged-in">
-                <div class="user-info">
-                    <h3>✅ Welcome Back!</h3>
-                    <p>You are signed in and ready to use all platform features</p>
-                    <button class="btn" onclick="signOut()">Sign Out</button>
+                <div class="bg-gray-100 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-2">Business Directory</h3>
+                    <p>Local businesses</p>
                 </div>
             </div>
         </div>
-        
-        <!-- Dashboard Page -->
-        <div id="dashboard" class="page">
-            <h2>📊 Your Dashboard</h2>
-            
-            <div class="dashboard-stats">
-                <div class="stat-card">
-                    <div class="stat-number">25</div>
-                    <div>Community Posts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">12</div>
-                    <div>Shop Products</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">£47</div>
-                    <div>Earnings This Month</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">8</div>
-                    <div>Business Connections</div>
-                </div>
-            </div>
-            
-            <div class="cards">
-                <div class="card">
-                    <h3>💬 Recent Activity</h3>
-                    <p>Your latest posts and interactions across the platform</p>
-                    <button class="btn" onclick="showPage('community')">View Activity</button>
-                </div>
-                <div class="card">
-                    <h3>💰 Earning Opportunities</h3>
-                    <p>Discover new ways to monetize your presence on the platform</p>
-                    <button class="btn" onclick="showPage('shop')">Explore Earnings</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Community Page -->
-        <div id="community" class="page">
-            <h2>🏘️ Community Discussions</h2>
-            
-            <div class="search-section">
-                <input type="text" placeholder="Search discussions..." id="communitySearch">
-                <select id="communityCategory">
-                    <option value="">All Categories</option>
-                    <option value="general">General Discussion</option>
-                    <option value="business">Business & Entrepreneurship</option>
-                    <option value="health">Health & Wellness</option>
-                    <option value="technology">Technology</option>
-                </select>
-            </div>
-            
-            <div class="community-post">
-                <h4>🚀 Welcome to Our Community!</h4>
-                <p>Share your thoughts, connect with others, and build meaningful relationships. This is your space to discuss anything that matters to you.</p>
-                <small>Posted by Admin • 2 hours ago</small>
-            </div>
-            
-            <div class="community-post">
-                <h4>💼 Business Networking Tips</h4>
-                <p>Looking for advice on growing your network? Let's share strategies that have worked for building professional relationships.</p>
-                <small>Posted by Sarah Johnson • 4 hours ago</small>
-            </div>
-            
-            <div class="community-post">
-                <h4>🌍 Local Business Recommendations</h4>
-                <p>What are some great local businesses in your area? Share your favorites and help others discover amazing services.</p>
-                <small>Posted by Mike Chen • 6 hours ago</small>
-            </div>
-        </div>
-        
-        <!-- Business Page -->
-        <div id="business" class="page">
-            <h2>🏢 Business Directory</h2>
-            
-            <div class="search-section">
-                <input type="text" placeholder="Search businesses..." id="businessSearch">
-                <select id="businessLocation">
-                    <option value="">All Locations</option>
-                    <option value="london">London</option>
-                    <option value="manchester">Manchester</option>
-                    <option value="birmingham">Birmingham</option>
-                    <option value="glasgow">Glasgow</option>
-                </select>
-                <select id="businessCategory">
-                    <option value="">All Categories</option>
-                    <option value="restaurant">Restaurants</option>
-                    <option value="retail">Retail</option>
-                    <option value="services">Services</option>
-                    <option value="healthcare">Healthcare</option>
-                </select>
-            </div>
-            
-            <div class="business-card">
-                <h4>🍕 Tony's Pizza Palace</h4>
-                <p><strong>Location:</strong> Manchester City Centre</p>
-                <p><strong>Category:</strong> Restaurant</p>
-                <p>Authentic Italian pizza made with fresh ingredients. Family-owned for over 20 years.</p>
-                <p><strong>Contact:</strong> 0161 123 4567</p>
-            </div>
-            
-            <div class="business-card">
-                <h4>🔧 Quick Fix Repairs</h4>
-                <p><strong>Location:</strong> Birmingham</p>
-                <p><strong>Category:</strong> Services</p>
-                <p>Professional repair services for electronics, appliances, and more. Same-day service available.</p>
-                <p><strong>Contact:</strong> 0121 987 6543</p>
-            </div>
-            
-            <div class="business-card">
-                <h4>🌿 Green Thumb Garden Centre</h4>
-                <p><strong>Location:</strong> London</p>
-                <p><strong>Category:</strong> Retail</p>
-                <p>Everything you need for your garden. Plants, tools, and expert advice.</p>
-                <p><strong>Contact:</strong> 020 7123 4567</p>
-            </div>
-        </div>
-        
-        <!-- Shop Page -->
+    </main>
+    
+    <footer class="bg-gray-800 text-white p-4 text-center">
+        <p>&copy; 2025 Yogull Platform - Successfully Deployed</p>
+    </footer>
 </body>
+</html>
