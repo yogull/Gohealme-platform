@@ -1,8 +1,9 @@
 [build]
-  command = "cd client && npm install && npm run build"
+  command = "npm install && cd client && npm install && npm run build"
   publish = "client/dist"
 
 [build.environment]
+  NODE_VERSION = "18"
   VITE_FIREBASE_API_KEY = "AIzaSyAxHlbxOi8qJg8LjrglHZgxZ7qliqg-njI"
   VITE_FIREBASE_PROJECT_ID = "gohealme-9bdf0"
   VITE_FIREBASE_APP_ID = "1:823297665017:web:3427ba4397e12447ccbf28"
