@@ -3,1068 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yogull - Social Community Platform</title>
+    <title>Yogull - Community Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxHlbxOi8qJg8LjrglHZgxZ7qliqg-njI",
+            authDomain: "gohealme-9bdf0.firebaseapp.com",
+            projectId: "gohealme-9bdf0",
+            storageBucket: "gohealme-9bdf0.firebasestorage.app",
+            messagingSenderId: "823297665017",
+            appId: "1:823297665017:web:3427ba4397e12447ccbf28"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        
+        // Check for existing authentication on page load
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                showDashboard(user);
+            }
+        });
+        
+        // Social login functions
+        window.signInWithGoogle = async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                showDashboard(result.user);
+            } catch (error) {
+                console.error('Google sign in error:', error);
+                alert('Sign in failed. Please try again.');
+            }
+        };
+        
+        window.signInWithFacebook = async () => {
+            const provider = new FacebookAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                showDashboard(result.user);
+            } catch (error) {
+                console.error('Facebook sign in error:', error);
+                alert('Sign in failed. Please try again.');
+            }
+        };
+        
+        window.signInWithTwitter = async () => {
+            const provider = new TwitterAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                showDashboard(result.user);
+            } catch (error) {
+                console.error('Twitter sign in error:', error);
+                alert('Sign in failed. Please try again.');
+            }
+        };
+        
+        // Email/password login
+        window.signInWithEmail = async () => {
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            
+            try {
+                const result = await signInWithEmailAndPassword(auth, email, password);
+                showDashboard(result.user);
+            } catch (error) {
+                console.error('Email sign in error:', error);
+                alert('Sign in failed: ' + error.message);
+            }
+        };
+        
+        // Show dashboard after successful login
+        function showDashboard(user) {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboardPage').style.display = 'block';
+            document.getElementById('userEmail').textContent = user.email || 'User';
+        }
+        
+        // Logout function
+        window.logout = () => {
+            auth.signOut().then(() => {
+                document.getElementById('loginPage').style.display = 'block';
+                document.getElementById('dashboardPage').style.display = 'none';
+            });
+        };
+    </script>
+    
     <style>
         .login-container { min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .platform-container { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .platform-container { background: linear-gradient(135deg, #f4faff 0%, #f0f2fe 100%); }
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
         .feature-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .business-card { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
         .community-card { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
         .hidden { display: none; }
-        .active-nav { background-color: #7c3aed !important; color: white !important; }
+        .overlay { background-color: #7c3aed !important; color: white !important; }
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .modal-content { background: white; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal-content { background: white; padding: 20px; min-height: 100vh; position: fixed; left: 0; top: 0; z-index: 50; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         .chat-bubble-user { background: #7c3aed; color: white; margin-left: auto; }
         .chat-bubble-ai { background: #f3f4f6; color: #374151; }
-        .chat-bubble { padding: 12px 16px; border-radius: 18px; margin: 8px 0; max-width: 80%; word-wrap: break-word; }
-        .sidebar { width: 300px; background: white; height: 100vh; position: fixed; left: 0; top: 0; z-index: 50; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .main-content { margin-left: 300px; padding: 20px; min-height: 100vh; background: #f9fafb; }
+        .sidebar { width: 280px; background: white; height: 100vh; position: fixed; left: 0; top: 0; z-index: 50; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         .sidebar-hidden { transform: translateX(-100%); }
+        .sidebar.open { transform: translateX(0); }
+        .main-content { margin-left: 300px; padding: 20px; min-height: 100vh; background: #f9fafb; }
         .main-content-full { margin-left: 0; }
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
             .sidebar.open { transform: translateX(0); }
             .main-content { margin-left: 0; }
         }
-        .post-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: #7c3aed; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
-        .btn-primary { background: #7c3aed; color: white; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; }
-        .btn-primary:hover { background: #6d28d9; }
-        .btn-secondary { background: #e5e7eb; color: #374151; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; }
-        .btn-secondary:hover { background: #d1d5db; }
-        .nav-item { padding: 12px 20px; cursor: pointer; border-radius: 8px; margin: 4px 0; display: flex; align-items: center; }
-        .nav-item:hover { background: #f3f4f6; }
-        .nav-item.active { background: #7c3aed; color: white; }
     </style>
 </head>
-<body class="bg-gray-50">
-    
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-container flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-8">
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+            <h2 class="text-2xl font-bold text-center mb-6">Sign in to your Yogull account</h2>
             
-            <!-- Header -->
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-purple-600 mb-2">Join Yogull Community</h1>
-                <p class="text-gray-600">Connect with people worldwide, discover local businesses, and build your community</p>
-            </div>
-            
-            <!-- Features Preview -->
-            <div class="mb-6 space-y-3">
-                <div class="flex items-center text-sm text-gray-700">
-                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
-                    </svg>
-                    Community Connection - Connect with active members worldwide
-                </div>
-                <div class="flex items-center text-sm text-gray-700">
-                    <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path>
-                    </svg>
-                    Discussion Forums - Join active discussions
-                </div>
-                <div class="flex items-center text-sm text-gray-700">
-                    <svg class="w-4 h-4 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
-                    </svg>
-                    Local Business Directory - 107+ businesses, £5,784 revenue
-                </div>
-            </div>
-            
-            <!-- Welcome Back Section -->
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <h3 class="font-bold text-blue-900 mb-2">Welcome Back</h3>
-                <p class="text-sm text-blue-800 mb-3">Sign in to your Yogull account</p>
-                
-                <!-- Email Login Form -->
-                <form onsubmit="handleEmailLogin(event)" class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-medium text-blue-700 mb-1">Email</label>
-                        <input 
-                            type="email" 
-                            id="emailInput"
-                            value="patientbrain.com@gmail.com"
-                            placeholder="Enter your email"
-                            class="w-full px-3 py-2 text-sm border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-blue-700 mb-1">Password</label>
-                        <input 
-                            type="password" 
-                            id="passwordInput"
-                            placeholder="Enter your password"
-                            class="w-full px-3 py-2 text-sm border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                    </div>
-                    <button 
-                        type="submit"
-                        class="w-full bg-blue-600 text-white py-2 rounded text-sm font-medium hover:bg-blue-700 transition-colors"
-                    >
-                        Sign In
-                    </button>
-                </form>
-                
-                <!-- Social Login Divider -->
-                <div class="flex items-center my-4">
-                    <div class="flex-1 border-t border-gray-300"></div>
-                    <span class="px-3 text-xs text-gray-500 bg-blue-50">OR CONTINUE WITH</span>
-                    <div class="flex-1 border-t border-gray-300"></div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="emailInput" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="patientbrain.com@gmail.com">
                 </div>
                 
-                <!-- Social Login Buttons -->
-                <div class="space-y-2">
-                    <button onclick="socialLogin('Google')" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                        <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="passwordInput" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••">
+                </div>
+                
+                <button onclick="signInWithEmail()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Sign In
+                </button>
+                
+                <div class="text-center text-gray-500 my-4">OR CONTINUE WITH</div>
+                
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="signInWithGoogle()" class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24">
+                            <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                         </svg>
-                        Sign in with Google
                     </button>
                     
-                    <button onclick="socialLogin('Facebook')" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="#1877F2" viewBox="0 0 24 24">
+                    <button onclick="signInWithFacebook()" class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                         </svg>
-                        Sign in with Facebook
                     </button>
                     
-                    <button onclick="socialLogin('Twitter')" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="#1DA1F2" viewBox="0 0 24 24">
-                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    <button onclick="signInWithTwitter()" class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                         </svg>
-                        Sign in with Twitter/X
                     </button>
                 </div>
-            </div>
-            
-            <!-- Demo Access Button -->
-            <div class="mt-4 text-center">
-                <button onclick="demoAccess()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-medium">
-                    Enter Platform (Demo)
-                </button>
+                
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    Don't have an account? <a href="#" class="text-blue-600 hover:underline">Sign up</a>
+                </p>
             </div>
         </div>
     </div>
 
-    <!-- Main Platform (Hidden Initially) -->
-    <div id="mainPlatform" class="hidden">
-        <!-- Sidebar Navigation -->
-        <div id="sidebar" class="sidebar">
-            <div class="p-6">
-                <div class="flex items-center mb-8">
-                    <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
-                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-gray-900">Yogull</h1>
-                        <p class="text-sm text-gray-500">Social Platform</p>
-                    </div>
-                </div>
-                
-                <!-- User Profile -->
-                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="user-avatar mr-3" id="sidebarAvatar">U</div>
-                        <div>
-                            <p class="font-medium text-gray-900" id="sidebarName">User</p>
-                            <p class="text-sm text-gray-500" id="sidebarEmail">user@example.com</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Navigation Menu -->
-                <nav class="space-y-2">
-                    <div class="nav-item active" onclick="showSection('dashboard')" id="nav-dashboard">
-                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
-                        </svg>
-                        Dashboard
-                    </div>
-                    <div class="nav-item" onclick="showSection('community')" id="nav-community">
-                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
-                        </svg>
-                        Community
-                    </div>
-                    <div class="nav-item" onclick="showSection('chat')" id="nav-chat">
-                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path>
-                        </svg>
-                        Chat
-                        <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">3</span>
-                    </div>
-                    <div class="nav-item" onclick="showSection('business')" id="nav-business">
-                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"></path>
-                        </svg>
-                        Business
-                    </div>
-                    <div class="nav-item" onclick="showSection('profile')" id="nav-profile">
-                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                        </svg>
-                        Profile Wall
-                    </div>
-                    <div class="nav-item" onclick="showSection('shop')" id="nav-shop">
-                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"></path>
-                        </svg>
-                        Shop
-                    </div>
-                    <div class="nav-item" onclick="showSection('gallery')" id="nav-gallery">
-                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
-                        </svg>
-                        Gallery
-                    </div>
-                </nav>
-                
-                <!-- Ask AI Button -->
-                <div class="mt-8">
-                    <button onclick="openAIChat()" class="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium">
-                        🤖 Ask AI Anything
-                    </button>
-                </div>
-                
-                <!-- Sign Out -->
-                <div class="mt-8 pt-6 border-t border-gray-200">
-                    <button onclick="logout()" class="w-full text-left text-gray-600 hover:text-gray-900 p-2">
-                        <svg class="w-5 h-5 inline mr-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
-                        </svg>
-                        Sign Out
-                    </button>
+    <!-- Dashboard Page -->
+    <div id="dashboardPage" style="display: none;" class="platform-container min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">Welcome to Yogull</h1>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600">Hello, <span id="userEmail">User</span></span>
+                    <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">Logout</button>
                 </div>
             </div>
-        </div>
-
-        <!-- Mobile Menu Toggle -->
-        <button id="mobileMenuToggle" class="fixed top-4 left-4 z-50 md:hidden bg-purple-600 text-white p-2 rounded-lg" onclick="toggleSidebar()">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-            </svg>
-        </button>
-
-        <!-- Main Content Area -->
-        <div id="mainContent" class="main-content">
             
-            <!-- Dashboard Section -->
-            <div id="dashboard" class="section">
-                <div class="mb-8">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">🏠 Dashboard</h1>
-                    <p class="text-xl text-gray-600">Your complete social community platform</p>
+            <div class="dashboard-grid">
+                <div class="feature-card p-6 rounded-lg shadow text-white">
+                    <h3 class="text-xl font-semibold mb-2">Community Discussions</h3>
+                    <p class="text-gray-100 mb-4">Join conversations and connect with others</p>
+                    <button class="bg-white text-purple-600 px-4 py-2 rounded-md hover:bg-gray-100">Explore</button>
                 </div>
                 
-                <!-- Platform Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-3xl font-bold text-gray-900">25</p>
-                                <p class="text-gray-600">Active Users</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-3xl font-bold text-gray-900">1,225</p>
-                                <p class="text-gray-600">Discussions</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-3xl font-bold text-gray-900">107</p>
-                                <p class="text-gray-600">Businesses</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-3xl font-bold text-gray-900">£5,784</p>
-                                <p class="text-gray-600">Revenue Potential</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="business-card p-6 rounded-lg shadow text-white">
+                    <h3 class="text-xl font-semibold mb-2">Business Directory</h3>
+                    <p class="text-gray-100 mb-4">Discover local businesses and services</p>
+                    <button class="bg-white text-pink-600 px-4 py-2 rounded-md hover:bg-gray-100">Browse</button>
                 </div>
                 
-                <!-- Quick Actions -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-lg font-semibold mb-4">👥 Community Hub</h3>
-                        <p class="text-gray-600 mb-4">1,225+ active discussions across health, government, environment, and technology topics.</p>
-                        <button onclick="showSection('community')" class="btn-primary">Explore Community</button>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-lg font-semibold mb-4">🏢 Business Directory</h3>
-                        <p class="text-gray-600 mb-4">107+ local businesses across 8 countries with £5,784 annual revenue potential.</p>
-                        <button onclick="showSection('business')" class="btn-primary">View Businesses</button>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-lg font-semibold mb-4">👤 Profile & Social</h3>
-                        <p class="text-gray-600 mb-4">Share photos, videos, and connect with friends through personalised profile walls.</p>
-                        <button onclick="showSection('profile')" class="btn-primary">My Profile</button>
-                    </div>
-                </div>
-                
-                <!-- Recent Activity -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-xl font-semibold mb-4">Recent Platform Activity</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                            <div class="user-avatar mr-3">JD</div>
-                            <div>
-                                <p class="font-medium">John Doe started a new discussion</p>
-                                <p class="text-sm text-gray-600">"Local Healthcare Improvements Initiative" • 15 minutes ago</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                            <div class="user-avatar mr-3">SM</div>
-                            <div>
-                                <p class="font-medium">Sarah Miller joined the community</p>
-                                <p class="text-sm text-gray-600">Welcome to Yogull! • 32 minutes ago</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                            <div class="user-avatar mr-3">BC</div>
-                            <div>
-                                <p class="font-medium">Business listing added</p>
-                                <p class="text-sm text-gray-600">"EcoEnergy Solutions" joined the directory • 1 hour ago</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="community-card p-6 rounded-lg shadow text-white">
+                    <h3 class="text-xl font-semibold mb-2">Profile & Chat</h3>
+                    <p class="text-gray-100 mb-4">Manage your profile and chat with friends</p>
+                    <button class="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-gray-100">View Profile</button>
                 </div>
             </div>
-
-            <!-- Community Section -->
-            <div id="community" class="section hidden">
-                <div class="mb-8">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">👥 Community Discussions</h1>
-                    <p class="text-xl text-gray-600">Join 1,225+ active discussions</p>
-                </div>
-                
-                <!-- Create New Discussion -->
-                <div class="bg-white rounded-lg shadow p-6 mb-6">
-                    <h3 class="text-lg font-semibold mb-4">Start a New Discussion</h3>
-                    <div class="space-y-4">
-                        <input type="text" placeholder="Discussion title..." class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <textarea placeholder="What would you like to discuss?" class="w-full p-3 border border-gray-300 rounded-lg h-24 focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
-                        <div class="flex justify-between items-center">
-                            <select class="p-2 border border-gray-300 rounded">
-                                <option>🏥 Health</option>
-                                <option>🌱 Environment</option>
-                                <option>🏛️ Government</option>
-                                <option>💻 Technology</option>
-                                <option>🏫 Education</option>
-                                <option>💰 Economy</option>
-                                <option>🚗 Transport</option>
-                                <option>👥 Community</option>
-                            </select>
-                            <button class="btn-primary">Post Discussion</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Discussion List -->
-                <div class="space-y-4">
-                    <div class="post-card">
-                        <div class="flex items-start space-x-4">
-                            <div class="user-avatar">JD</div>
-                            <div class="flex-1">
-                                <div class="flex items-center space-x-2 mb-2">
-                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">🏥 Health</span>
-                                    <span class="text-sm text-gray-500">2 hours ago</span>
-                                </div>
-                                <h3 class="text-xl font-semibold text-gray-900 mb-2">Local Healthcare Improvements Initiative</h3>
-                                <p class="text-gray-600 mb-4">Discussion about improving healthcare services in our community. I've been thinking about how we can work together to address the challenges our local healthcare system is facing...</p>
-                                <div class="flex items-center space-x-6 text-sm text-gray-500">
-                                    <button class="flex items-center space-x-1 hover:text-purple-600">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path></svg>
-                                        <span>23 replies</span>
-                                    </button>
-                                    <button class="flex items-center space-x-1 hover:text-red-600">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
-                                        <span>15 likes</span>
-                                    </button>
-                                    <button class="flex items-center space-x-1 hover:text-blue-600">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path></svg>
-                                        <span>Share</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="post-card">
-                        <div class="flex items-start space-x-4">
-                            <div class="user-avatar">SM</div>
-                            <div class="flex-1">
-                                <div class="flex items-center space-x-2 mb-2">
-                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">🌱 Environment</span>
-                                    <span class="text-sm text-gray-500">4 hours ago</span>
-                                </div>
-                                <h3 class="text-xl font-semibold text-gray-900 mb-2">Environmental Sustainability Initiative</h3>
-                                <p class="text-gray-600 mb-4">How can we make our local area more environmentally sustainable? I'd love to hear your ideas about renewable energy, waste reduction, and community gardens...</p>
-                                <div class="flex items-center space-x-6 text-sm text-gray-500">
-                                    <button class="flex items-center space-x-1 hover:text-purple-600">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path></svg>
-                                        <span>45 replies</span>
-                                    </button>
-                                    <button class="flex items-center space-x-1 hover:text-red-600">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
-                                        <span>32 likes</span>
-                                    </button>
-                                    <button class="flex items-center space-x-1 hover:text-blue-600">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path></svg>
-                                        <span>Share</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chat Section -->
-            <div id="chat" class="section hidden">
-                <div class="mb-8">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">💬 Chat Rooms</h1>
-                    <p class="text-xl text-gray-600">Connect with community members in real-time</p>
-                </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Chat Room List -->
-                    <div class="bg-white rounded-lg shadow">
-                        <div class="p-4 border-b border-gray-200">
-                            <h3 class="font-semibold">Active Rooms</h3>
-                        </div>
-                        <div class="p-4 space-y-3">
-                            <div class="p-3 bg-purple-50 border border-purple-200 rounded-lg cursor-pointer">
-                                <div class="flex justify-between items-center">
-                                    <h4 class="font-medium">General Discussion</h4>
-                                    <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">2</span>
-                                </div>
-                                <p class="text-sm text-gray-600">12 members online</p>
-                            </div>
-                            
-                            <div class="p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
-                                <h4 class="font-medium">Health & Wellness</h4>
-                                <p class="text-sm text-gray-600">8 members online</p>
-                            </div>
-                            
-                            <div class="p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
-                                <h4 class="font-medium">Local Business</h4>
-                                <p class="text-sm text-gray-600">15 members online</p>
-                            </div>
-                            
-                            <div class="p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
-                                <h4 class="font-medium">Tech Talk</h4>
-                                <p class="text-sm text-gray-600">6 members online</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Chat Window -->
-                    <div class="lg:col-span-2 bg-white rounded-lg shadow flex flex-col" style="height: 600px;">
-                        <div class="p-4 border-b border-gray-200">
-                            <h3 class="font-semibold">General Discussion</h3>
-                            <p class="text-sm text-gray-600">12 members online</p>
-                        </div>
-                        
-                        <div class="flex-1 p-4 overflow-y-auto space-y-4">
-                            <div class="flex items-start space-x-3">
-                                <div class="user-avatar flex-shrink-0">JD</div>
-                                <div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="font-medium">John Doe</span>
-                                        <span class="text-xs text-gray-500">10:30 AM</span>
-                                    </div>
-                                    <p class="text-gray-700">Hey everyone! How's everyone doing today?</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start space-x-3">
-                                <div class="user-avatar flex-shrink-0">SM</div>
-                                <div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="font-medium">Sarah Miller</span>
-                                        <span class="text-xs text-gray-500">10:32 AM</span>
-                                    </div>
-                                    <p class="text-gray-700">Great! Just joined the community and loving it already!</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start space-x-3">
-                                <div class="user-avatar flex-shrink-0">BC</div>
-                                <div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="font-medium">Business Center</span>
-                                        <span class="text-xs text-gray-500">10:35 AM</span>
-                                    </div>
-                                    <p class="text-gray-700">Welcome Sarah! Feel free to check out our business directory if you're looking for local services.</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="p-4 border-t border-gray-200">
-                            <div class="flex space-x-3">
-                                <input type="text" placeholder="Type your message..." class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                <button class="btn-primary px-6">Send</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Business Section -->
-            <div id="business" class="section hidden">
-                <div class="mb-8">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">🏢 Business Directory</h1>
-                    <p class="text-xl text-gray-600">107+ local businesses with £5,784 revenue potential</p>
-                </div>
-                
-                <!-- Business Categories -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-4 rounded-lg shadow text-center cursor-pointer hover:bg-purple-50">
-                        <div class="text-2xl mb-2">🏥</div>
-                        <h3 class="font-medium">Healthcare</h3>
-                        <p class="text-sm text-gray-600">23 businesses</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow text-center cursor-pointer hover:bg-purple-50">
-                        <div class="text-2xl mb-2">🍕</div>
-                        <h3 class="font-medium">Food & Dining</h3>
-                        <p class="text-sm text-gray-600">31 businesses</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow text-center cursor-pointer hover:bg-purple-50">
-                        <div class="text-2xl mb-2">🛠️</div>
-                        <h3 class="font-medium">Services</h3>
-                        <p class="text-sm text-gray-600">28 businesses</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow text-center cursor-pointer hover:bg-purple-50">
-                        <div class="text-2xl mb-2">🛍️</div>
-                        <h3 class="font-medium">Retail</h3>
-                        <p class="text-sm text-gray-600">25 businesses</p>
-                    </div>
-                </div>
-                
-                <!-- Business Listings -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xl mr-4">🏥</div>
-                            <div>
-                                <h3 class="font-bold text-xl">HealthCare Plus Clinic</h3>
-                                <p class="text-sm text-gray-600">Healthcare • Local</p>
-                            </div>
-                        </div>
-                        <p class="text-gray-600 mb-4">Comprehensive healthcare services including family medicine and specialist consultations.</p>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm font-medium text-green-600">💰 £24/year advertising</span>
-                            <button class="btn-primary">📞 Contact</button>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white text-xl mr-4">⚡</div>
-                            <div>
-                                <h3 class="font-bold text-xl">EcoEnergy Solutions</h3>
-                                <p class="text-sm text-gray-600">Energy • Sustainability</p>
-                            </div>
-                        </div>
-                        <p class="text-gray-600 mb-4">Sustainable energy solutions including solar panels and wind systems.</p>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm font-medium text-green-600">💰 £24/year advertising</span>
-                            <button class="btn-primary">📞 Contact</button>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center text-white text-xl mr-4">🍕</div>
-                            <div>
-                                <h3 class="font-bold text-xl">Bella's Italian Kitchen</h3>
-                                <p class="text-sm text-gray-600">Restaurant • Italian</p>
-                            </div>
-                        </div>
-                        <p class="text-gray-600 mb-4">Authentic Italian cuisine with fresh ingredients and traditional recipes.</p>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm font-medium text-green-600">💰 £24/year advertising</span>
-                            <button class="btn-primary">📞 Contact</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Profile Wall Section -->
-            <div id="profile" class="section hidden">
-                <div class="mb-8">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">👤 My Profile Wall</h1>
-                    <p class="text-xl text-gray-600">Share updates, photos, and connect with friends</p>
-                </div>
-                
-                <!-- Profile Header -->
-                <div class="bg-white rounded-lg shadow p-6 mb-6">
-                    <div class="flex items-center">
-                        <div class="user-avatar text-3xl mr-6" id="profileAvatar">U</div>
-                        <div class="flex-1">
-                            <h2 class="text-2xl font-bold text-gray-900" id="profileDisplayName">User</h2>
-                            <p class="text-gray-600" id="profileDisplayEmail">user@example.com</p>
-                            <p class="text-gray-600 mt-2">Community Member since 2024</p>
-                        </div>
-                        <button class="btn-secondary">Edit Profile</button>
-                    </div>
-                    
-                    <div class="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-purple-600">12</p>
-                            <p class="text-gray-600">Posts</p>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-purple-600">48</p>
-                            <p class="text-gray-600">Comments</p>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-2xl font-bold text-purple-600">156</p>
-                            <p class="text-gray-600">Connections</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Create Post -->
-                <div class="bg-white rounded-lg shadow p-6 mb-6">
-                    <h3 class="text-lg font-semibold mb-4">Share an Update</h3>
-                    <div class="space-y-4">
-                        <textarea placeholder="What's on your mind?" class="w-full p-3 border border-gray-300 rounded-lg h-24 focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
-                        <div class="flex justify-between items-center">
-                            <div class="flex space-x-4">
-                                <button class="flex items-center space-x-2 text-gray-600 hover:text-purple-600">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
-                                    <span>📷 Photo</span>
-                                </button>
-                                <button class="flex items-center space-x-2 text-gray-600 hover:text-purple-600">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a2 2 0 01-2 2H4a2 2 0 01-2-2V8a1 1 0 00-.553.894l2 5A1 1 0 005 14h8a2 2 0 002-2v-4c0-.536-.268-1.01-.715-1.289z"></path></svg>
-                                    <span>🎥 Video</span>
-                                </button>
-                            </div>
-                            <button class="btn-primary">Post Update</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Posts Feed -->
-                <div class="space-y-6">
-                    <div class="post-card">
-                        <div class="flex items-start space-x-4">
-                            <div class="user-avatar">U</div>
-                            <div class="flex-1">
-                                <div class="flex items-center space-x-2 mb-2">
-                                    <span class="font-medium" id="postUserName">User</span>
-                                    <span class="text-sm text-gray-500">2 hours ago</span>
-                                </div>
-                                <p class="text-gray-700 mb-4">Just joined the Yogull community! Excited to connect with everyone and explore all the amazing features this platform has to offer.</p>
-                                <div class="flex items-center space-x-6 text-sm text-gray-500">
-                                    <button class="flex items-center space-x-1 hover:text-red-600">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
-                                        <span>5 likes</span>
-                                    </button>
-                                    <button class="flex items-center space-x-1 hover:text-purple-600">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path></svg>
-                                        <span>Comment</span>
-                                    </button>
-                                    <button class="flex items-center space-x-1 hover:text-blue-600">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path></svg>
-                                        <span>Share</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Shop Section -->
-            <div id="shop" class="section hidden">
-                <div class="mb-8">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">🛍️ Community Shop</h1>
-                    <p class="text-xl text-gray-600">Discover products from community members</p>
-                </div>
-                
-                <!-- Shop Categories -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-4 rounded-lg shadow text-center cursor-pointer hover:bg-purple-50">
-                        <div class="text-2xl mb-2">👕</div>
-                        <h3 class="font-medium">Clothing</h3>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow text-center cursor-pointer hover:bg-purple-50">
-                        <div class="text-2xl mb-2">🏠</div>
-                        <h3 class="font-medium">Home & Garden</h3>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow text-center cursor-pointer hover:bg-purple-50">
-                        <div class="text-2xl mb-2">💻</div>
-                        <h3 class="font-medium">Electronics</h3>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow text-center cursor-pointer hover:bg-purple-50">
-                        <div class="text-2xl mb-2">🎨</div>
-                        <h3 class="font-medium">Arts & Crafts</h3>
-                    </div>
-                </div>
-                
-                <!-- Product Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-white rounded-lg shadow overflow-hidden">
-                        <div class="h-48 bg-gray-200 flex items-center justify-center">
-                            <span class="text-4xl">👕</span>
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-semibold text-lg mb-2">Handmade Organic T-Shirt</h3>
-                            <p class="text-gray-600 text-sm mb-3">Comfortable organic cotton t-shirt made by local artisans</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xl font-bold text-purple-600">£25.00</span>
-                                <button class="btn-primary">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg shadow overflow-hidden">
-                        <div class="h-48 bg-gray-200 flex items-center justify-center">
-                            <span class="text-4xl">🪴</span>
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-semibold text-lg mb-2">Indoor Plant Collection</h3>
-                            <p class="text-gray-600 text-sm mb-3">Beautiful set of air-purifying plants for your home</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xl font-bold text-purple-600">£45.00</span>
-                                <button class="btn-primary">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg shadow overflow-hidden">
-                        <div class="h-48 bg-gray-200 flex items-center justify-center">
-                            <span class="text-4xl">🎨</span>
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-semibold text-lg mb-2">Custom Art Print</h3>
-                            <p class="text-gray-600 text-sm mb-3">Personalized artwork created by community artists</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xl font-bold text-purple-600">£35.00</span>
-                                <button class="btn-primary">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Gallery Section -->
-            <div id="gallery" class="section hidden">
-                <div class="mb-8">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">📸 Photo Gallery</h1>
-                    <p class="text-xl text-gray-600">Share and discover beautiful moments from the community</p>
-                </div>
-                
-                <!-- Upload Section -->
-                <div class="bg-white rounded-lg shadow p-6 mb-6">
-                    <h3 class="text-lg font-semibold mb-4">Share Your Photos</h3>
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                        </svg>
-                        <p class="text-gray-600 mb-4">Drag and drop your photos here, or click to select</p>
-                        <button class="btn-primary">Choose Photos</button>
-                    </div>
-                </div>
-                
-                <!-- Photo Grid -->
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <div class="aspect-square bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg overflow-hidden cursor-pointer">
-                        <div class="w-full h-full flex items-center justify-center text-white text-2xl">🏞️</div>
-                    </div>
-                    <div class="aspect-square bg-gradient-to-br from-green-400 to-blue-500 rounded-lg overflow-hidden cursor-pointer">
-                        <div class="w-full h-full flex items-center justify-center text-white text-2xl">🌺</div>
-                    </div>
-                    <div class="aspect-square bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg overflow-hidden cursor-pointer">
-                        <div class="w-full h-full flex items-center justify-center text-white text-2xl">🏠</div>
-                    </div>
-                    <div class="aspect-square bg-gradient-to-br from-pink-400 to-red-500 rounded-lg overflow-hidden cursor-pointer">
-                        <div class="w-full h-full flex items-center justify-center text-white text-2xl">🎉</div>
-                    </div>
-                    <div class="aspect-square bg-gradient-to-br from-indigo-400 to-purple-500 rounded-lg overflow-hidden cursor-pointer">
-                        <div class="w-full h-full flex items-center justify-center text-white text-2xl">🌟</div>
-                    </div>
-                    <div class="aspect-square bg-gradient-to-br from-teal-400 to-green-500 rounded-lg overflow-hidden cursor-pointer">
-                        <div class="w-full h-full flex items-center justify-center text-white text-2xl">🌈</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- AI Chat Modal -->
-        <div id="aiChatModal" class="modal hidden">
-            <div class="modal-content">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-gray-900">🤖 Ask AI Anything</h2>
-                        <button onclick="closeAIChat()" class="text-gray-500 hover:text-gray-700">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    
-                    <div id="chatMessages" class="h-96 overflow-y-auto border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
-                        <div class="chat-bubble chat-bubble-ai">
-                            🎉 <strong>Hello!</strong> I'm your Yogull AI assistant. Your platform has:
-                            <br><br>📊 <strong>Platform Stats:</strong>
-                            <br>• 25 Active Users
-                            <br>• 1,225 Community Discussions  
-                            <br>• 107 Local Businesses
-                            <br>• £5,784 Annual Revenue Potential
-                            <br><br>💬 <strong>I can help with:</strong>
-                            <br>• Community discussions and topics
-                            <br>• Local business information
-                            <br>• Platform navigation and features
-                            <br>• Health and wellness advice
-                            <br>• Technology recommendations
-                            <br>• Revenue optimization strategies
-                            <br><br>What would you like to know?
-                        </div>
-                    </div>
-                    
-                    <div class="flex space-x-2">
-                        <input type="text" id="userMessage" placeholder="Type your question..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" onkeypress="handleEnterKey(event)">
-                        <button onclick="sendMessage()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">Send</button>
-                    </div>
-                </div>
+            
+            <div class="mt-8 bg-white p-6 rounded-lg shadow">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Platform Features</h3>
+                <ul class="space-y-2 text-gray-600">
+                    <li>✅ Social Media Community Platform</li>
+                    <li>✅ Business Directory & Local Networking</li>
+                    <li>✅ Real-time Chat & Messaging</li>
+                    <li>✅ Profile Walls & Media Sharing</li>
+                    <li>✅ AI Assistant Integration</li>
+                    <li>✅ Revenue Generation System</li>
+                </ul>
             </div>
         </div>
     </div>
 
     <script>
-        // Authentication functions
-        function handleEmailLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('emailInput').value;
-            const password = document.getElementById('passwordInput').value;
-            
-            if (!email || !password) {
-                alert('Please enter both email and password');
-                return;
-            }
-            
-            const submitBtn = event.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Signing In...';
-            submitBtn.disabled = true;
-            
-            setTimeout(() => {
-                if (email.includes('@')) {
-                    showPlatform(email, 'Email');
-                } else {
-                    alert('Please enter a valid email address');
-                    submitBtn.textContent = originalText;
-                    submitBtn.disabled = false;
-                }
-            }, 1500);
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
         }
-
-        function socialLogin(provider) {
-            event.target.textContent = `Connecting to ${provider}...`;
-            event.target.disabled = true;
-            
-            setTimeout(() => {
-                const email = provider === 'signup' ? 'newuser@yogull.com' : `user@${provider.toLowerCase()}.com`;
-                showPlatform(email, provider);
-            }, 2000);
-        }
-
-        function demoAccess() {
-            event.target.textContent = 'Entering Platform...';
-            event.target.disabled = true;
-            
-            setTimeout(() => {
-                showPlatform('demo@yogull.com', 'Demo');
-            }, 1000);
-        }
-        
-        function showPlatform(email, loginType) {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('mainPlatform').classList.remove('hidden');
-            
-            // Update user info throughout the platform
-            const name = email.split('@')[0];
-            const initial = name.charAt(0).toUpperCase();
-            
-            // Update sidebar
-            document.getElementById('sidebarName').textContent = name.charAt(0).toUpperCase() + name.slice(1);
-            document.getElementById('sidebarEmail').textContent = email;
-            document.getElementById('sidebarAvatar').textContent = initial;
-            
-            // Update profile section
-            document.getElementById('profileDisplayName').textContent = name.charAt(0).toUpperCase() + name.slice(1);
-            document.getElementById('profileDisplayEmail').textContent = email;
-            document.getElementById('profileAvatar').textContent = initial;
-            document.getElementById('postUserName').textContent = name.charAt(0).toUpperCase() + name.slice(1);
-            
-            showLoginSuccess(loginType);
-            showSection('dashboard');
-        }
-        
-        function showLoginSuccess(type) {
-            const notification = document.createElement('div');
-            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-            notification.innerHTML = `✅ Successfully signed in via ${type}!`;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                if (document.body.contains(notification)) {
-                    document.body.removeChild(notification);
-                }
-            }, 3000);
-        }
-        
-        function logout() {
-            document.getElementById('mainPlatform').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('emailInput').value = 'patientbrain.com@gmail.com';
-            document.getElementById('passwordInput').value = '';
-        }
-        
-        // Platform functions
-        function showSection(sectionName) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('hidden');
-            });
-            document.getElementById(sectionName).classList.remove('hidden');
-            
-            // Update sidebar navigation
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            const activeNav = document.getElementById('nav-' + sectionName);
-            if (activeNav) {
-                activeNav.classList.add('active');
-            }
-        }
-        
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
-        
-        // AI Chat functions
-        function openAIChat() {
-            document.getElementById('aiChatModal').classList.remove('hidden');
-            document.getElementById('userMessage').focus();
-        }
-        
-        function closeAIChat() {
-            document.getElementById('aiChatModal').classList.add('hidden');
-        }
-        
-        function sendMessage() {
-            const input = document.getElementById('userMessage');
-            const message = input.value.trim();
-            if (!message) return;
-            
-            addChatMessage(message, 'user');
-            input.value = '';
-            
-            setTimeout(() => {
-                const response = getAIResponse(message);
-                addChatMessage(response, 'ai');
-            }, 1000);
-        }
-        
-        function addChatMessage(message, sender) {
-            const chatMessages = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            
-            if (sender === 'user') {
-                messageDiv.className = 'chat-bubble chat-bubble-user';
-                messageDiv.innerHTML = `<strong>You:</strong> ${message}`;
-            } else {
-                messageDiv.className = 'chat-bubble chat-bubble-ai';
-                messageDiv.innerHTML = `<strong>🤖 AI Assistant:</strong> ${message.replace(/\n/g, '<br>')}`;
-            }
-            
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-        
-        function getAIResponse(message) {
-            const lowerMessage = message.toLowerCase();
-            
-            if (lowerMessage.includes('revenue') || lowerMessage.includes('money')) {
-                return 'Your platform generates £5,784 annually through business advertising. With 107+ businesses paying £24/year each, you have strong recurring revenue streams.';
-            } else if (lowerMessage.includes('users') || lowerMessage.includes('members')) {
-                return 'You currently have 25 active users engaging with your platform. Your community discussions have 1,225+ posts showing excellent engagement levels.';
-            } else if (lowerMessage.includes('business')) {
-                return 'Your business directory includes 107+ local businesses across 8 countries. Each business pays £24/year for advertising spots, creating a sustainable revenue model.';
-            } else if (lowerMessage.includes('community') || lowerMessage.includes('discussion')) {
-                return 'Your community has 1,225+ active discussions across health, government, environment, and technology topics. This shows a very engaged and diverse user base!';
-            } else if (lowerMessage.includes('features') || lowerMessage.includes('platform')) {
-                return 'Yogull includes: Community Discussions, Real-time Chat, Business Directory, Profile Walls, Photo Gallery, Community Shop, and AI Assistant. Everything you need for a complete social platform!';
-            }
-            
-            return 'I can help with your Yogull platform! You have 25 users, 1,225 discussions, 107 businesses, and £5,784 revenue potential. What specific information would you like to know?';
-        }
-        
-        function handleEnterKey(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
-        
-        // Close modal when clicking outside
-        document.getElementById('aiChatModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeAIChat();
-            }
-        });
-
-        // Auto-demo after 10 seconds if no login
-        setTimeout(() => {
-            if (!document.getElementById('loginScreen').classList.contains('hidden')) {
-                demoAccess();
-            }
-        }, 10000);
     </script>
 </body>
 </html>
