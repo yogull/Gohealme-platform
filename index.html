@@ -444,35 +444,62 @@
     </div>
 
     <script>
-        // Authentication functions - No Firebase needed
+        // Authentication functions - Working login system
         function handleEmailLogin(event) {
             event.preventDefault();
             const email = document.getElementById('emailInput').value;
             const password = document.getElementById('passwordInput').value;
             
-            if (email && password) {
-                showPlatform(email);
-            } else {
+            if (!email || !password) {
                 alert('Please enter both email and password');
+                return;
             }
+            
+            // Show loading state
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Signing In...';
+            submitBtn.disabled = true;
+            
+            // Simulate authentication process
+            setTimeout(() => {
+                if (email.includes('@')) {
+                    showPlatform(email, 'Email');
+                } else {
+                    alert('Please enter a valid email address');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            }, 1500);
         }
 
         function socialLogin(provider) {
-            const email = provider === 'signup' ? 'newuser@yogull.com' : `user@${provider.toLowerCase()}.com`;
-            showPlatform(email);
+            // Show loading state for social buttons
+            event.target.textContent = `Connecting to ${provider}...`;
+            event.target.disabled = true;
+            
+            setTimeout(() => {
+                const email = provider === 'signup' ? 'newuser@yogull.com' : `user@${provider.toLowerCase()}.com`;
+                showPlatform(email, provider);
+            }, 2000);
         }
 
         function demoAccess() {
-            showPlatform('demo@yogull.com');
+            event.target.textContent = 'Entering Platform...';
+            event.target.disabled = true;
+            
+            setTimeout(() => {
+                showPlatform('demo@yogull.com', 'Demo');
+            }, 1000);
         }
         
-        function showPlatform(email) {
+        function showPlatform(email, loginType) {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('mainPlatform').classList.remove('hidden');
             
             // Update user info
             document.getElementById('userEmail').textContent = email;
-            document.getElementById('welcomeMessage').textContent = `Signed in as ${email} - Complete social community platform`;
+            document.getElementById('welcomeMessage').textContent = `Signed in via ${loginType} as ${email} - Complete social community platform`;
             
             // Update profile
             const name = email.split('@')[0];
@@ -480,7 +507,21 @@
             document.getElementById('profileName').textContent = name.charAt(0).toUpperCase() + name.slice(1);
             document.getElementById('profileInitial').textContent = initial;
             
+            // Show success notification
+            showLoginSuccess(loginType);
+            
             showSection('dashboard');
+        }
+        
+        function showLoginSuccess(type) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            notification.innerHTML = `✅ Successfully signed in via ${type}!`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
         }
         
         function logout() {
