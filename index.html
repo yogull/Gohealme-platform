@@ -1,6 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- ADD THIS SCRIPT SECTION TO YOUR GITHUB INDEX.HTML -->
+<!-- Place this right after the <head> tag and before any other content -->
+
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
+    import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyAxHlbxOi8qJg8LjrglHZgxZ7qliqg-njI",
+        authDomain: "gohealme-9bdf0.firebaseapp.com",
+        projectId: "gohealme-9bdf0",
+        storageBucket: "gohealme-9bdf0.firebasestorage.app",
+        messagingSenderId: "823297665017",
+        appId: "1:823297665017:web:3427ba4397e12447ccbf28"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    
+    // Check for existing authentication on page load
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            console.log('User logged in:', user.email);
+            // Show dashboard or redirect user
+        }
+    });
+    
+    // Social login functions
+    window.signInWithGoogle = async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider);
+            console.log('Google login successful:', result.user.email);
+            alert('Login successful! Welcome ' + result.user.email);
+        } catch (error) {
+            console.error('Google sign in error:', error);
+            alert('Google sign in failed: ' + error.message);
+        }
+    };
+    
+    window.signInWithFacebook = async () => {
+        const provider = new FacebookAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider);
+            console.log('Facebook login successful:', result.user.email);
+            alert('Login successful! Welcome ' + result.user.email);
+        } catch (error) {
+            console.error('Facebook sign in error:', error);
+            alert('Facebook sign in failed: ' + error.message);
+        }
+    };
+    
+    window.signInWithTwitter = async () => {
+        const provider = new TwitterAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider);
+            console.log('Twitter login successful:', result.user.email);
+            alert('Login successful! Welcome ' + result.user.email);
+        } catch (error) {
+            console.error('Twitter sign in error:', error);
+            alert('Twitter sign in failed: ' + error.message);
+        }
+    };
+    
+    // Logout function
+    window.logout = () => {
+        auth.signOut().then(() => {
+            console.log('User logged out');
+            alert('You have been logged out');
+        });
+    };
+</script>
+
+<!-- ALSO ADD THESE BUTTON ONCLICK FUNCTIONS TO YOUR EXISTING BUTTONS -->
+<!-- Make sure your Google button has: onclick="signInWithGoogle()" -->
+<!-- Make sure your Facebook button has: onclick="signInWithFacebook()" -->
+<!-- Make sure your Twitter button has: onclick="signInWithTwitter()" -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yogull - Community Platform</title>
